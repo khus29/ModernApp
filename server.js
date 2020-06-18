@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 const express = require('express');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const passport = require('passport')
 const flash = require('express-flash')
@@ -12,8 +13,11 @@ const {initializePassport, checkAuthenticated, checkNotAuthenticated} = require(
 
 
 const app = express();
+mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true, useUnifiedTopology: true}, () => {
+    console.log('---Mongodb connected ---');
+})
 
-const users = []; // TOD: user will go to mongo db
+const users = []; // TOD: user will go to db
 
 initializePassport(
   passport,
@@ -40,7 +44,7 @@ app.get('/', checkAuthenticated, (req,res) => {
 app.get('/login', checkNotAuthenticated, (req,res) => {
   res.render('login.ejs');
 })
-app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+app.post('/login', checkNotAuthenticated, passport.authenticate('signin', {
   successRedirect: '/',
   failureRedirect: '/login',
   failureFlash: true
@@ -63,6 +67,7 @@ app.post('/register', checkNotAuthenticated, async (req,res) => {
   }
 
 })
+
 app.delete('/logout', (req, res) => {
   req.logOut()
   res.redirect('/login')

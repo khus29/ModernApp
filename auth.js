@@ -19,7 +19,8 @@ const initializePassport = (passport, getUserByEmail, getUserById) => {
     }
   }
 
-  passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password' }, authenticateUser))
+  passport.use('signin', new LocalStrategy({ usernameField: 'email', passwordField: 'password' }, authenticateUser))
+
   passport.serializeUser((user, done) => done(null, user.id)) // what it is doing
   passport.deserializeUser((id, done) => {
     return done(null, getUserById(id))
